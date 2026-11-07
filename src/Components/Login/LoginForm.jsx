@@ -12,7 +12,7 @@ const LoginForm = () => {
           <label className="label text-white">Mobile Number</label>
           <input
             type="number"
-            className="input rounded-3xl focus:outline-none focus:border-transparent focus:ring-0
+            className="input bg-white/20 rounded-3xl focus:outline-none focus:border-transparent focus:ring-0
   [&::-webkit-inner-spin-button]:appearance-none 
   [&::-webkit-outer-spin-button]:appearance-none"
             placeholder="Number"
@@ -21,7 +21,7 @@ const LoginForm = () => {
           <label className="label text-white">Pin</label>
           <input
             type="password"
-            className="input focus:outline-none focus:border-transparent focus:ring-0 rounded-3xl "
+            className="input bg-white/20 focus:outline-none focus:border-transparent focus:ring-0 rounded-3xl "
             placeholder="pin"
           />
 
