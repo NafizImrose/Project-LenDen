@@ -1,18 +1,38 @@
-import React from "react";
+"use client";
+import Link from "next/link";
+import React, { useState } from "react";
 
 const Navbar = () => {
+  const [showBalance, setShowBalance] = useState(false);
+
+  // Temporary balance
+  const balance = 12500;
+
   return (
     <div>
       <div className="navbar bg-base-100 shadow-sm">
         <div className="flex-1">
-          <a className="btn btn-ghost text-xl">daisyUI</a>
+          <Link href="/home" className="text-xl font-bold">
+            LenDen
+          </Link>
         </div>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Search"
-            className="input w-24 md:w-auto"
-          />
+
+        <div className="flex gap-4 items-center">
+          {/* Balance Section */}
+          <div className="flex items-center gap-2">
+            <span className="font-semibold">
+              {showBalance ? `৳ ${balance}` : "৳ ••••••"}
+            </span>
+
+            <button
+              onClick={() => setShowBalance(!showBalance)}
+              className="btn shadow-3xl rounded-2xl w-30 bg-gradient-to-r from-purple-600 to-purple-900 border-none text-white btn-sm btn-outline"
+            >
+              {showBalance ? "Hide Balance" : "Show Balance"}
+            </button>
+          </div>
+
+          {/* Profile Dropdown */}
           <div className="dropdown dropdown-end">
             <div
               tabIndex={0}
@@ -21,11 +41,12 @@ const Navbar = () => {
             >
               <div className="w-10 rounded-full">
                 <img
-                  alt="Tailwind CSS Navbar component"
+                  alt="Profile"
                   src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                 />
               </div>
             </div>
+
             <ul
               tabIndex={-1}
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
