@@ -26,7 +26,7 @@ const Sidebar = () => {
               </Link>
             </li>
             <li>
-              <a>Sidebar Item 2</a>
+              <Link href="/home/add-money">Add Money</Link>
             </li>
           </ul>
         </div>

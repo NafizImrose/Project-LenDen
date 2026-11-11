@@ -1,12 +1,42 @@
 "use client";
+
 import Link from "next/link";
 import React, { useState } from "react";
 
 const Navbar = () => {
   const [showBalance, setShowBalance] = useState(false);
+  const [balance, setBalance] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Temporary balance
-  const balance = 12500;
+  // Fetch balance when button is clicked
+  const handleBalance = async () => {
+    // Hide balance without making an API call
+    if (showBalance) {
+      setShowBalance(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await fetch("http://localhost:8000/balance", {
+        cache: "no-store",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setBalance(data.balance);
+        setShowBalance(true);
+      } else {
+        console.log(data.message);
+      }
+    } catch (error) {
+      console.log("Error fetching balance:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -25,10 +55,15 @@ const Navbar = () => {
             </span>
 
             <button
-              onClick={() => setShowBalance(!showBalance)}
+              onClick={handleBalance}
+              disabled={loading}
               className="btn shadow-3xl rounded-2xl w-30 bg-gradient-to-r from-purple-600 to-purple-900 border-none text-white btn-sm btn-outline"
             >
-              {showBalance ? "Hide Balance" : "Show Balance"}
+              {loading
+                ? "Loading..."
+                : showBalance
+                  ? "Hide Balance"
+                  : "Show Balance"}
             </button>
           </div>
 
