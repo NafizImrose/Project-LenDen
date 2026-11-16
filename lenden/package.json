@@ -9,12 +9,17 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@better-auth/mongo-adapter": "^1.7.23",
     "@heroui/react": "^3.2.7",
     "@heroui/styles": "^3.2.7",
+    "better-auth": "^1.7.23",
     "lucide-react": "^1.70.0",
+    "mongodb": "^7.9.0",
     "next": "16.4.5",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "react-hot-toast": "^2.6.1",
+    "sonner": "^2.0.8"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",

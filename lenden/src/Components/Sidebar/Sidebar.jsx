@@ -1,37 +1,192 @@
+"use client";
+
 import Link from "next/link";
-import React from "react";
+import { useState } from "react";
+import {
+  Wallet,
+  Send,
+  PlusCircle,
+  History,
+  ReceiptText,
+  Settings,
+  HelpCircle,
+  Menu,
+  Banknote,
+  Smartphone,
+  Receipt,
+  X,
+} from "lucide-react";
 
 const Sidebar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const menuItems = [
+    { name: "Send Money", href: "/home/send-money", icon: Send },
+    { name: "Add Money", href: "/home/add-money", icon: PlusCircle },
+    { name: "Cash Out", href: "/home/cash-out", icon: Banknote },
+    {
+      name: "Mobile Recharge",
+      href: "/home/mobile-recharge",
+      icon: Smartphone,
+    },
+    { name: "Pay Bill", href: "/home/pay-bill", icon: Receipt },
+    { name: "Transactions", href: "/home/transactions", icon: History },
+    {
+      name: "Payment",
+      href: "/home/payment-history",
+      icon: ReceiptText,
+    },
+  ];
+
+  const preferenceItems = [
+    { name: "Settings", href: "/home/system-setting", icon: Settings },
+    { name: "Help & Support", href: "/home/help", icon: HelpCircle },
+  ];
+
   return (
-    <div>
-      <div className="drawer lg:drawer-open">
-        <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
-        <div className="drawer-content flex flex-col items-center justify-center">
-          {/* Page content here */}
-          <label htmlFor="my-drawer-3" className="btn drawer-button lg:hidden">
-            Open drawer
-          </label>
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsOpen(true)}
+        className="fixed left-4 top-18 z-40 flex h-11 w-11 items-center justify-center rounded-xl bg-purple-700 text-white shadow-lg transition hover:bg-purple-800 md:hidden"
+        aria-label="Open sidebar"
+      >
+        <Menu size={23} />
+      </button>
+
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <button
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+          aria-label="Close sidebar"
+        />
+      )}
+
+      {/* Mobile Drawer */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-72 border-r border-purple-100 bg-base-100 px-4 py-6 shadow-2xl transition-transform duration-300 md:hidden ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="mb-5 flex justify-end">
+          <button
+            onClick={() => setIsOpen(false)}
+            className="rounded-lg p-2 text-gray-500 transition hover:bg-purple-50 hover:text-purple-700"
+            aria-label="Close sidebar"
+          >
+            <X size={22} />
+          </button>
         </div>
-        <div className="drawer-side">
-          <label
-            htmlFor="my-drawer-3"
-            aria-label="close sidebar"
-            className="drawer-overlay"
-          ></label>
-          <ul className="menu bg-base-200 min-h-full w-80 p-4">
-            {/* Sidebar content here */}
-            <li className="rounded-2xl bg-gradient-to-r from-purple-400 to-purple-600 ">
-              <Link className="text-white font-bold" href="/home/send-money">
-                Send Money
-              </Link>
-            </li>
-            <li>
-              <Link href="/home/add-money">Add Money</Link>
-            </li>
-          </ul>
+
+        {/* Mobile Main Menu */}
+        <p className="mb-3 px-3 text-xs font-bold uppercase tracking-wider text-purple-400">
+          Main Menu
+        </p>
+
+        <ul className="space-y-1">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <li key={item.name}>
+                <Link
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className="group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-base-content/70 transition-all hover:bg-purple-50 hover:text-purple-800"
+                >
+                  <Icon size={19} className="text-purple-600" />
+                  {item.name}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* Mobile Preferences */}
+        <p className="mb-3 mt-9 px-3 text-xs font-bold uppercase tracking-wider text-purple-400">
+          Preferences
+        </p>
+
+        <ul className="space-y-1">
+          {preferenceItems.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <li key={item.name}>
+                <Link
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-base-content/70 transition hover:bg-purple-50 hover:text-purple-800"
+                >
+                  <Icon size={19} className="text-purple-600" />
+                  {item.name}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="mt-10 border-t border-purple-100 pt-4 text-center">
+          <p className="text-xs text-purple-400">© 2026 LenDen</p>
         </div>
-      </div>
-    </div>
+      </aside>
+
+      {/* Desktop Sidebar */}
+      <aside className="hidden min-h-screen w-60 shrink-0 border-r border-purple-100 bg-base-100 px-4 py-6 md:block">
+        {/* Desktop Logo */}
+
+        {/* Desktop Main Menu */}
+        <p className="mb-3 px-3 text-xs font-bold uppercase tracking-wider text-purple-400">
+          Main Menu
+        </p>
+
+        <ul className="space-y-1">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <li key={item.name}>
+                <Link
+                  href={item.href}
+                  className="group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-base-content/70 transition-all hover:bg-purple-50 hover:text-purple-800"
+                >
+                  <Icon size={19} className="text-purple-600" />
+                  {item.name}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* Desktop Preferences */}
+        <p className="mb-3 mt-9 px-3 text-xs font-bold uppercase tracking-wider text-purple-400">
+          Preferences
+        </p>
+
+        <ul className="space-y-1">
+          {preferenceItems.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <li key={item.name}>
+                <Link
+                  href={item.href}
+                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-base-content/70 transition hover:bg-purple-50 hover:text-purple-800"
+                >
+                  <Icon size={19} className="text-purple-600" />
+                  {item.name}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="mt-10 border-t border-purple-100 pt-4 text-center">
+          <p className="text-xs text-purple-400">© 2026 LenDen</p>
+        </div>
+      </aside>
+    </>
   );
 };
 

@@ -1,5 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
+
+<Toaster position="top-right" reverseOrder={false} />;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
