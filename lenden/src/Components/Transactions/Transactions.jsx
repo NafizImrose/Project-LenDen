@@ -16,10 +16,13 @@ export default function Transactions() {
 
   const fetchTransactions = async () => {
     try {
-      const res = await fetch("http://localhost:8000/transactions", {
-        method: "GET",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/transactions`,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
 
       const data = await res.json();
 
@@ -41,10 +44,13 @@ export default function Transactions() {
   useEffect(() => {
     const loadTransactions = async () => {
       try {
-        const res = await fetch("http://localhost:8000/transactions", {
-          method: "GET",
-          credentials: "include",
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/transactions`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
 
         const data = await res.json();
 

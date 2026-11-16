@@ -6,7 +6,9 @@ const client = new MongoClient(process.env.MONGO_URL);
 const db = client.db("lenden");
 
 export const auth = betterAuth({
-  //...other options
+  baseURL: process.env.BETTER_AUTH_URL,
+  secret: process.env.BETTER_AUTH_SECRET,
+
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,

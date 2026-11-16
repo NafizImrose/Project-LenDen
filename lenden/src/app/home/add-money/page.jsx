@@ -22,7 +22,7 @@ export default function AddMoney() {
 
   // Get logged-in user's balance
   useEffect(() => {
-    fetch("http://localhost:8000/balance", {
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/balance`, {
       method: "GET",
       credentials: "include",
     })
@@ -93,18 +93,21 @@ export default function AddMoney() {
         return;
       }
 
-      const res = await fetch("http://localhost:8000/add-money", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/add-money`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            amount: enteredAmount,
+            bank: bank,
+            accountNumber: accountNumber.trim(),
+          }),
         },
-        body: JSON.stringify({
-          amount: enteredAmount,
-          bank: bank,
-          accountNumber: accountNumber.trim(),
-        }),
-      });
+      );
 
       const data = await res.json();
 
