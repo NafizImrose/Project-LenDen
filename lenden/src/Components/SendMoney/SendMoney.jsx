@@ -13,7 +13,7 @@ export default function SendMoney() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/balance`, {
+    fetch("/api/backend/balance", {
       method: "GET",
       credentials: "include",
     })
@@ -47,7 +47,7 @@ export default function SendMoney() {
         return;
       }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/send-money`, {
+      const res = await fetch("/api/backend/send-money", {
         method: "POST",
         credentials: "include",
         headers: {

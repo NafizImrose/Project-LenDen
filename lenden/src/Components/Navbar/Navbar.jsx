@@ -14,7 +14,7 @@ const Navbar = () => {
 
   useEffect(() => {
     //code
-    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/profile-name`, {
+    fetch("/api/backend/profile-name", {
       method: "GET",
       credentials: "include",
     })
@@ -45,14 +45,11 @@ const Navbar = () => {
     try {
       setLoading(true);
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/balance`,
-        {
-          method: "GET",
-          credentials: "include",
-          cache: "no-store",
-        },
-      );
+      const response = await fetch("/api/backend/balance", {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+      });
 
       const data = await response.json();
 
