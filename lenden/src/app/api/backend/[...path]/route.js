@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-
 async function proxy(request, { params }) {
   try {
     const { path } = await params;
