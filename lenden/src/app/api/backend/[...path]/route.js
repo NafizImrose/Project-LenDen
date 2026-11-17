@@ -20,6 +20,7 @@ async function proxy(request, { params }) {
     const targetURL = `${backendURL}/${pathname}${search}`;
 
     // Forward necessary headers, including the login cookie
+
     const headers = new Headers();
 
     ["content-type", "authorization", "cookie"].forEach((key) => {

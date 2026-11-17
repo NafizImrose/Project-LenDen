@@ -68,7 +68,7 @@ const Navbar = () => {
 
   return (
     <div>
-      <div className="navbar bg-base-100 shadow-sm px-10 ">
+      <div className="navbar bg-base-100 shadow-sm md:px-10 ">
         <div className="flex-1 min-w-0">
           <Link
             href="/home"
@@ -88,22 +88,23 @@ const Navbar = () => {
           </Link>
         </div>
 
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-1 md:gap-4 items-center">
           {/* Balance Section */}
-          <div className="flex items-center gap-2">
-            <span className="font-semibold">
-              {showBalance ? `৳ ${balance}` : "৳ ••••••"}
-            </span>
-
+          <div className="flex flex-col items-center ">
+            <div className="profile-name">
+              <h2 className="text-[12px] md:text-sm text-purple-800 font-bold">
+                {name}
+              </h2>
+            </div>
             <button
               onClick={handleBalance}
               disabled={loading}
-              className="btn shadow-3xl rounded-2xl w-30 bg-gradient-to-r from-purple-600 to-purple-900 border-none text-white btn-sm btn-outline"
+              className="btn shadow-3xl  text-[12px] md:text-sm  btn-sm rounded-2xl w-27 md:w-30 bg-gradient-to-r from-purple-600 to-purple-900 border-none text-white btn-outline"
             >
               {loading
                 ? "Loading..."
                 : showBalance
-                  ? "Hide Balance"
+                  ? `৳ ${balance}`
                   : "Show Balance"}
             </button>
           </div>
@@ -151,9 +152,6 @@ const Navbar = () => {
                   </Link>
                 </li>
               </ul>
-            </div>
-            <div className="profile-name">
-              <h2 className="text-sm text-purple-800 font-bold">{name}</h2>
             </div>
           </div>
         </div>
