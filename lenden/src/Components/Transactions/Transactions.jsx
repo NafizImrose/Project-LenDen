@@ -164,10 +164,14 @@ export default function Transactions() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="mx-auto max-w-4xl">
+    // CHANGED: h-screen + overflow-hidden
+    // পুরো page-এর scrolling বন্ধ থাকবে
+    <div className="h-screen overflow-hidden bg-gray-50 p-4 md:p-8">
+      {/* CHANGED: flex flex-col + h-full
+          Content available height-এর মধ্যে থাকবে */}
+      <div className="mx-auto flex h-full max-w-4xl flex-col">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex shrink-0 items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="rounded-xl bg-purple-100 p-3">
               <History className="text-purple-700" size={24} />
@@ -194,7 +198,8 @@ export default function Transactions() {
         </div>
 
         {/* Transaction Count */}
-        <div className="mb-5 flex items-center justify-between rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
+        {/* CHANGED: shrink-0 added */}
+        <div className="mb-5 flex shrink-0 items-center justify-between rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
           <div>
             <p className="text-sm text-gray-500">Total Transactions</p>
             <h2 className="mt-1 text-2xl font-bold text-purple-700">
@@ -208,14 +213,18 @@ export default function Transactions() {
         </div>
 
         {/* Transaction List */}
-        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-          <div className="border-b border-gray-100 p-5">
+        {/* CHANGED: flex-1 min-h-0 flex flex-col
+            Available remaining height ব্যবহার করবে */}
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+          {/* CHANGED: shrink-0
+              List heading scroll হবে না */}
+          <div className="shrink-0 border-b border-gray-100 p-5">
             <h2 className="font-bold text-gray-900">Recent Transactions</h2>
           </div>
 
           {/* Loading */}
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20">
+            <div className="flex flex-1 flex-col items-center justify-center py-20">
               <span className="loading loading-spinner loading-lg text-purple-600"></span>
               <p className="mt-4 text-sm text-gray-500">
                 Loading transactions...
@@ -223,7 +232,7 @@ export default function Transactions() {
             </div>
           ) : error ? (
             /* Error */
-            <div className="py-16 text-center">
+            <div className="flex flex-1 flex-col items-center justify-center py-16 text-center">
               <p className="text-sm text-red-500">{error}</p>
 
               <button
@@ -235,7 +244,7 @@ export default function Transactions() {
             </div>
           ) : transactions.length === 0 ? (
             /* Empty State */
-            <div className="flex flex-col items-center justify-center py-20">
+            <div className="flex flex-1 flex-col items-center justify-center py-20">
               <div className="rounded-full bg-purple-50 p-5">
                 <History size={35} className="text-purple-400" />
               </div>
@@ -250,7 +259,10 @@ export default function Transactions() {
             </div>
           ) : (
             /* Transactions */
-            <div className="divide-y divide-gray-100">
+
+            // CHANGED: min-h-0 flex-1 overflow-y-auto
+            // শুধু এই div-এর ভেতরেই scroll হবে
+            <div className="min-h-0 flex-1 divide-y divide-gray-100 overflow-y-auto">
               {transactions.map((item, index) => {
                 const info = getTransactionInfo(item);
                 const Icon = info.icon;
