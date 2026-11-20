@@ -6,6 +6,7 @@ import { MongoClient } from "mongodb";
 import { requireAuth } from "./middleware.js";
 
 import { ObjectId } from "mongodb";
+
 const app = express();
 
 app.use(
@@ -213,12 +214,12 @@ app.post("/add-money", requireAuth, async (req, res) => {
   res.status(200).json({
     success: true,
     message: "Money sent successfully",
-    Balance: result,
+    amount: result,
   });
 });
 
-//profile name api
-app.get("/profile-name", requireAuth, async (req, res) => {
+//profile
+app.get("/profile", requireAuth, async (req, res) => {
   const userId = req.user.id;
   const userCollection = db.collection("user");
   const data = await userCollection.findOne({
@@ -233,20 +234,315 @@ app.get("/profile-name", requireAuth, async (req, res) => {
   res.status(200).json({
     success: true,
     name: data.name,
+    email: data.email,
+    address: data.address || "",
+    dob: data.dob || "",
+    createTime: data.createdAt,
   });
 });
+//update profile
+
+app.patch("/profile", requireAuth, async (req, res) => {
+  const userId = req.user.id;
+
+  const { name, address, dob } = req.body;
+
+  await db.collection("user").updateOne(
+    { _id: new ObjectId(userId) },
+    {
+      $set: {
+        name: name,
+        address: address,
+        dob: dob,
+      },
+    },
+  );
+
+  const updatedUser = await db.collection("user").findOne({
+    _id: new ObjectId(userId),
+  });
+
+  if (!updatedUser) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Profile updated successfully",
+    profile: {
+      name: updatedUser.name || "",
+      email: updatedUser.email || "",
+      address: updatedUser.address || "",
+      dob: updatedUser.dob || "",
+      createTime: updatedUser.createdAt || "",
+      profilePicture: updatedUser.profilePicture || "",
+    },
+  });
+});
+
 // transaction api
 app.get("/transactions", requireAuth, async (req, res) => {
   const userId = req.user.id;
   const transactiondb = await db
     .collection("transactions")
     .find({ userId: userId })
-    .sort({ created: 1 })
+    .sort({ createdAt: -1 })
     .toArray();
   res.status(200).json({
     success: true,
     data: transactiondb,
   });
+});
+//cash out
+app.post("/cash-out", requireAuth, async (req, res) => {
+  const outBalance = req.body.amount;
+  const agentNumber = req.body.agentNumber;
+  const user = req.user.id;
+
+  const dataCollection = await db.collection("balance").findOne({
+    userId: user,
+  });
+  if (dataCollection.balance < outBalance) {
+    return res.status(404).json({
+      success: false,
+      message: "Insuffucient balance",
+    });
+  }
+  const result = dataCollection.amount - outBalance;
+
+  await db.collection("balance").updateOne(
+    { userId: user },
+    {
+      $set: {
+        amount: result,
+      },
+    },
+  );
+
+  // transaction
+  const transactiondb = db.collection("transactions");
+
+  await transactiondb.insertOne({
+    userId: user,
+    type: "Cash Out",
+    amount: outBalance,
+    agentNumber: agentNumber,
+    createdAt: new Date(),
+  });
+  res.status(200).json({
+    success: true,
+    message: "Cash Out successfull",
+    balance: result,
+  });
+});
+//mobile recharge api
+app.post("/mobile-recharge", requireAuth, async (req, res) => {
+  try {
+    const user = req.user.id;
+
+    const amount = Number(req.body.amount);
+    const { recipientNumber, operator, rechargeType } = req.body;
+
+    // Amount validation
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid recharge amount",
+      });
+    }
+
+    // Phone validation
+    if (!/^01[3-9]\d{8}$/.test(recipientNumber || "")) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid mobile number",
+      });
+    }
+
+    const balanceCollection = db.collection("balance");
+
+    const data = await balanceCollection.findOne({
+      userId: user,
+    });
+
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        message: "Balance not found",
+      });
+    }
+
+    if (data.amount < amount) {
+      return res.status(400).json({
+        success: false,
+        message: "Insufficient balance",
+      });
+    }
+
+    const result = data.amount - amount;
+
+    await balanceCollection.updateOne(
+      { userId: user },
+      {
+        $set: {
+          amount: result,
+        },
+      },
+    );
+
+    // Transaction history
+    const transactiondb = db.collection("transactions");
+
+    await transactiondb.insertOne({
+      userId: user,
+      type: "Mobile Recharge",
+      amount: amount,
+      recipientNumber,
+      operator,
+      rechargeType,
+      createdAt: new Date(),
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Mobile recharge successful",
+      balance: result,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+});
+//pay bill api
+app.post("/pay-bill", requireAuth, async (req, res) => {
+  try {
+    const user = req.user.id;
+    const amount = Number(req.body.amount);
+
+    const balanceCollection = db.collection("balance");
+
+    const data = await balanceCollection.findOne({
+      userId: user,
+    });
+
+    if (!data) {
+      return res.status(400).json({
+        success: false,
+        message: "user not found",
+      });
+    }
+    if (amount > data.amount) {
+      return res.status(400).json({
+        success: false,
+        message: "Insuffient balance",
+      });
+    }
+    const result = data.amount - amount;
+
+    await balanceCollection.updateOne(
+      {
+        userId: user,
+      },
+      {
+        $set: {
+          amount: result,
+        },
+      },
+    );
+
+    //transaction
+    const transaction = db.collection("transactions");
+
+    await transaction.insertOne({
+      userId: user,
+      type: "Bill payment",
+      amount: amount,
+
+      createdAt: new Date(),
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Bill payment successful",
+      balance: result,
+    });
+  } catch (error) {
+    (console.log(error),
+      res.status(400).json({
+        success: false,
+        message: "something went wrong",
+      }));
+  }
+});
+
+//payment api
+app.post("/payment", requireAuth, async (req, res) => {
+  try {
+    const user = req.user.id;
+    const amount = Number(req.body.amount);
+    const merchant = req.body.merchantNumber;
+
+    const balanceCollection = db.collection("balance");
+
+    const data = await balanceCollection.findOne({
+      userId: user,
+    });
+
+    if (!data) {
+      return res.status(400).json({
+        success: false,
+        message: "user not found",
+      });
+    }
+    if (amount > data.amount) {
+      return res.status(400).json({
+        success: false,
+        message: "Insuffient balance",
+      });
+    }
+    const result = data.amount - amount;
+
+    await balanceCollection.updateOne(
+      {
+        userId: user,
+      },
+      {
+        $set: {
+          amount: result,
+        },
+      },
+    );
+
+    //transaction
+    const transaction = db.collection("transactions");
+
+    await transaction.insertOne({
+      userId: user,
+      type: "Payment",
+      amount: amount,
+      merchantNumber: merchant,
+      createdAt: new Date(),
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Payment successful",
+      balance: result,
+    });
+  } catch (error) {
+    (console.log(error),
+      res.status(400).json({
+        success: false,
+        message: "something went wrong",
+      }));
+  }
 });
 
 // Start server
@@ -261,5 +557,5 @@ async function startServer() {
     console.error("Server failed to start:", error);
   }
 }
-//kdjflkdj
+
 startServer();

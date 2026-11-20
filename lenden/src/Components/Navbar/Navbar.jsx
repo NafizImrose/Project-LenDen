@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import LogoutModal from "../Logout/Logout";
 import { error } from "better-auth/api";
+import { UserRound } from "lucide-react";
 
 const Navbar = () => {
   const [showBalance, setShowBalance] = useState(false);
@@ -14,7 +15,7 @@ const Navbar = () => {
 
   useEffect(() => {
     //code
-    fetch("/api/backend/profile-name", {
+    fetch("/api/backend/profile", {
       method: "GET",
       credentials: "include",
     })
@@ -105,7 +106,7 @@ const Navbar = () => {
                 ? "Loading..."
                 : showBalance
                   ? `৳ ${balance}`
-                  : "Show Balance"}
+                  : "Balance"}
             </button>
           </div>
 
@@ -117,11 +118,8 @@ const Navbar = () => {
                 role="button"
                 className="btn btn-ghost btn-circle avatar"
               >
-                <div className="w-10 rounded-full">
-                  <img
-                    alt="Profile"
-                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                  />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 text-purple-700 ring-2 ring-purple-200">
+                  <UserRound size={22} strokeWidth={2} />
                 </div>
               </div>
 
@@ -130,18 +128,15 @@ const Navbar = () => {
                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
               >
                 <li>
-                  <a className="justify-between">
+                  <Link href="/home/profile" className="justify-between">
                     Profile
                     <span className="badge">New</span>
-                  </a>
-                </li>
-
-                <li>
-                  <a>Settings</a>
+                  </Link>
                 </li>
 
                 <li>
                   <Link
+                    className="text-red-700  font-bold"
                     href="/"
                     onClick={(e) => {
                       e.preventDefault();

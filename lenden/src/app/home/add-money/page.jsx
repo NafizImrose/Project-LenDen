@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   ShieldCheck,
   ChevronDown,
+  LoaderCircle,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -19,6 +20,25 @@ export default function AddMoney() {
   const [balance, setBalance] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [balanceLoading, setBalanceLoading] = useState(true);
+
+  useEffect(() => {
+    const inputs = document.querySelectorAll('input[type="number"]');
+
+    const preventScroll = (e) => {
+      e.preventDefault();
+    };
+
+    inputs.forEach((input) => {
+      input.addEventListener("wheel", preventScroll, { passive: false });
+    });
+
+    return () => {
+      inputs.forEach((input) => {
+        input.removeEventListener("wheel", preventScroll);
+      });
+    };
+  }, []);
 
   // Get logged-in user's balance
   useEffect(() => {
@@ -40,6 +60,9 @@ export default function AddMoney() {
       })
       .catch((error) => {
         console.log("Balance error:", error);
+      })
+      .finally(() => {
+        setBalanceLoading(false);
       });
   }, []);
 
@@ -158,7 +181,11 @@ export default function AddMoney() {
                 <p className="text-sm text-purple-100">Available Balance</p>
 
                 <h2 className="mt-2 text-3xl font-bold">
-                  ৳ {Number(balance ?? 0).toLocaleString()}
+                  {balanceLoading ? (
+                    <LoaderCircle size={28} className="animate-spin" />
+                  ) : (
+                    <> ৳ {Number(balance ?? 0).toLocaleString()}</>
+                  )}
                 </h2>
 
                 <p className="mt-2 text-xs text-purple-100">

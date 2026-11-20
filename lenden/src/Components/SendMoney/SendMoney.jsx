@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Send, User, Wallet, ArrowLeft, ShieldCheck } from "lucide-react";
+import {
+  Send,
+  User,
+  Wallet,
+  ArrowLeft,
+  ShieldCheck,
+  LoaderCircle,
+} from "lucide-react";
 import Link from "next/link";
 
 export default function SendMoney() {
@@ -11,6 +18,25 @@ export default function SendMoney() {
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [balanceLoading, setBalanceLoading] = useState(true);
+
+  useEffect(() => {
+    const inputs = document.querySelectorAll('input[type="number"]');
+
+    const preventScroll = (e) => {
+      e.preventDefault();
+    };
+
+    inputs.forEach((input) => {
+      input.addEventListener("wheel", preventScroll, { passive: false });
+    });
+
+    return () => {
+      inputs.forEach((input) => {
+        input.removeEventListener("wheel", preventScroll);
+      });
+    };
+  }, []);
 
   useEffect(() => {
     fetch("/api/backend/balance", {
@@ -31,6 +57,9 @@ export default function SendMoney() {
       })
       .catch((error) => {
         console.log("Balance error:", error);
+      })
+      .finally(() => {
+        setBalanceLoading(false);
       });
   }, []);
 
@@ -106,7 +135,11 @@ export default function SendMoney() {
                 <p className="text-sm text-purple-100">Available Balance</p>
 
                 <h2 className="mt-2 text-3xl font-bold">
-                  ৳ {Number(balance ?? 0).toLocaleString()}
+                  {balanceLoading ? (
+                    <LoaderCircle size={28} className="animate-spin" />
+                  ) : (
+                    <>৳ {Number(balance ?? 0).toLocaleString()}</>
+                  )}
                 </h2>
 
                 <p className="mt-2 text-xs text-purple-100">
